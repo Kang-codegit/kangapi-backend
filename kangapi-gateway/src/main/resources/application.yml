@@ -1,0 +1,35 @@
+server:
+  port: 8090
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - AddResponseHeader=source, kang
+      routes:
+        - id: apirute
+          uri: http://localhost:8101
+          predicates:
+            - Path=/api/**
+#        - id: add_request_header_route
+#          uri: localhost:8101
+#          predicates:
+#            - Path=/api/**
+#          filters:
+#            - AddRequestHeader=X-Request-red, blue
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+        gateway: trace
+
+dubbo:
+  application:
+    name: dubbo-api-platform-backend-provider
+  protocol:
+    name: dubbo
+    port: 22223
+  registry:
+    id: nacos-registry
+    address: nacos://localhost:8848

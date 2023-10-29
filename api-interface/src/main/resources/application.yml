@@ -1,0 +1,8 @@
+server:
+  port: 8101
+  servlet:
+    context-path: /api
+#kangapi:
+#  client:
+#    access-key: kang
+#    secret-key: abcdefg
