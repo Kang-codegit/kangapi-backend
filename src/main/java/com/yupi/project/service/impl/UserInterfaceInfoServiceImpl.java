@@ -1,54 +1,119 @@
 package com.yupi.project.service.impl;
 
-import com.api.kangcommon.model.entity.UserInterfaceInfo;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import cn.ichensw.neroapiadmin.exception.BusinessException;
+import cn.ichensw.neroapiadmin.exception.ThrowUtils;
+import cn.ichensw.neroapiadmin.mapper.UserInterfaceInfoMapper;
+import cn.ichensw.neroapiadmin.service.UserInterfaceInfoService;
+import cn.ichensw.neroapiadmin.utils.SqlUtils;
+import cn.ichensw.neroapicommon.common.ErrorCode;
+import cn.ichensw.neroapicommon.constant.CommonConstant;
+import cn.ichensw.neroapicommon.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
+import cn.ichensw.neroapicommon.model.entity.UserInterfaceInfo;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yupi.project.common.ErrorCode;
-import com.yupi.project.exception.BusinessException;
-import com.yupi.project.service.UserInterfaceInfoService;
-import com.yupi.project.mapper.UserInterfaceInfoMapper;
-import org.apache.dubbo.config.annotation.DubboService;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 /**
- * @author sakuul
- * @description 针对表【user_interface_info(用户调用接口关系表)】的数据库操作Service实现
- * @createDate 2023-10-17 15:15:39
+ * @author csw
+ * @description 针对表【user_interface_info(用户调用接口关系)】的数据库操作Service实现
+ * @createDate 2023-06-17 12:32:57
  */
-@DubboService
 @Service
 public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoMapper, UserInterfaceInfo>
         implements UserInterfaceInfoService {
+
+    @Resource
+    private UserInterfaceInfoMapper userInterfaceInfoMapper;
 
     @Override
     public void validUserInterfaceInfo(UserInterfaceInfo userInterfaceInfo, boolean add) {
         if (userInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        if (add) {
-            if (userInterfaceInfo.getInterfaceInfoId() <= 0 || userInterfaceInfo.getUserId() <= 0) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在");
-            }
-            if (userInterfaceInfo.getLeftNum() < 0) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "剩余次数不能小于0");
-            }
+        Long userId = userInterfaceInfo.getUserId();
+        Long interfaceInfoId = userInterfaceInfo.getInterfaceInfoId();
+        Integer totalNum = userInterfaceInfo.getTotalNum();
+        Integer leftNum = userInterfaceInfo.getLeftNum();
+
+        List<UserInterfaceInfo> list = this.lambdaQuery()
+                .eq(UserInterfaceInfo::getUserId, userId)
+                .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceInfoId)
+                .list();
+        if (!list.isEmpty()) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "该用户已经拥有该接口");
         }
+
+        // 创建时，参数不能为空
+        if (add) {
+            ThrowUtils.throwIf(userId == null || interfaceInfoId == null, ErrorCode.PARAMS_ERROR);
+        }
+    }
+
+
+    /**
+     * 获取查询包装类
+     *
+     * @param interfaceInfoQueryRequest
+     * @return
+     */
+    @Override
+    public QueryWrapper<UserInterfaceInfo> getQueryWrapper(UserInterfaceInfoQueryRequest interfaceInfoQueryRequest) {
+
+        QueryWrapper<UserInterfaceInfo> queryWrapper = new QueryWrapper<>();
+        if (interfaceInfoQueryRequest == null) {
+            return queryWrapper;
+        }
+
+        String searchText = interfaceInfoQueryRequest.getSearchText();
+        Long id = interfaceInfoQueryRequest.getId();
+        Long userId = interfaceInfoQueryRequest.getUserId();
+        Long interfaceInfoId = interfaceInfoQueryRequest.getInterfaceInfoId();
+        Integer totalNum = interfaceInfoQueryRequest.getTotalNum();
+        Integer leftNum = interfaceInfoQueryRequest.getLeftNum();
+        Integer status = interfaceInfoQueryRequest.getStatus();
+        String sortField = interfaceInfoQueryRequest.getSortField();
+        String sortOrder = interfaceInfoQueryRequest.getSortOrder();
+
+        // 拼接查询条件
+        if (StringUtils.isNotBlank(searchText)) {
+            queryWrapper.like("name", searchText);
+        }
+        queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(totalNum), "totalNum", totalNum);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(leftNum), "leftNum", leftNum);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(interfaceInfoId), "interfaceInfoId", interfaceInfoId);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(status), "status", status);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
+        queryWrapper.eq("isDelete", false);
+        queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
+                sortField);
+        return queryWrapper;
+    }
+
+
+    @Override
+    public Page<UserInterfaceInfo> getUserInterfaceInfoVOPage(Page<UserInterfaceInfo> userInterfaceInfoPage, HttpServletRequest request) {
+        List<UserInterfaceInfo> interfaceInfoList = userInterfaceInfoPage.getRecords();
+        Page<UserInterfaceInfo> interfaceInfoVOPage = new Page<>(userInterfaceInfoPage.getCurrent(), userInterfaceInfoPage.getSize(), userInterfaceInfoPage.getTotal());
+        if (CollectionUtils.isEmpty(interfaceInfoList)) {
+            return interfaceInfoVOPage;
+        }
+        interfaceInfoVOPage.setRecords(interfaceInfoList);
+        return interfaceInfoVOPage;
     }
 
     @Override
-    public boolean invokeCount(long interfaceInfoId, long userId) {
-        //判断
-        if (interfaceInfoId <= 0 || userId <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        UpdateWrapper<UserInterfaceInfo> queryWrapper = new UpdateWrapper<>();
-        queryWrapper.eq("interfaceInfoId", interfaceInfoId);
-        queryWrapper.eq("userId", userId);
-//        queryWrapper.gt("leftNum",0);
-        queryWrapper.setSql("leftNum=leftNum -1,totalNum=totalNum + 1");
-        return this.update(queryWrapper);
+    public List<UserInterfaceInfo> listTopInvokeInterfaceInfo(int limit) {
+        return userInterfaceInfoMapper.listTopInvokeInterfaceInfo(limit);
     }
-
 }
 
 

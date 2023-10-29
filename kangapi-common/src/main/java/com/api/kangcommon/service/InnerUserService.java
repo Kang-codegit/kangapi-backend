@@ -2,21 +2,18 @@ package com.api.kangcommon.service;
 
 
 import com.api.kangcommon.model.entity.User;
-import com.baomidou.mybatisplus.extension.service.IService;
-
 
 /**
  * 用户服务
  *
  * @author yupi
  */
-public interface InnerUserService{
-
+public interface InnerUserService {
 
     /**
-     * 根据accessKey,secretKey查询用户
-     * @param accessKey
-     * @return
+     * 数据库中查是否已分配给用户秘钥（accessKey）
+     * @param accessKey accessKey
+     * @return User 用户信息
      */
     User getInvokeUser(String accessKey);
 }

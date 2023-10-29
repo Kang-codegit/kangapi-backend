@@ -146,6 +146,10 @@ public class InterfaceInfoController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         InterfaceInfo interfaceInfo = interfaceInfoService.getById(id);
+        //接口不存在返回notfound
+        if(interfaceInfo==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
         return ResultUtils.success(interfaceInfo);
     }
 

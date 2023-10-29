@@ -1,24 +1,43 @@
 package com.api.kangcommon.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import lombok.Data;
 
 /**
  * 用户
- *
- * @TableName user
+ * user
  */
-@TableName(value = "user")
+@TableName(value ="user")
 @Data
 public class User implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
+
+    /**
+     * 用户账号
+     */
+    private String userAccount;
+
+    /**
+     * 用户密码
+     */
+    private String userPassword;
+
+    /**
+     * 开放平台id
+     */
+    private String unionId;
+
+    /**
+     * 公众号openId
+     */
+    private String mpOpenId;
 
     /**
      * 用户昵称
@@ -26,39 +45,29 @@ public class User implements Serializable {
     private String userName;
 
     /**
-     * 账号
-     */
-    private String userAccount;
-
-    /**
-     * 签名accessKey
-     */
-    private String accessKey;
-
-    /**
-     * 签名secretKey
-     */
-    private String secretKey;
-
-    /**
      * 用户头像
      */
     private String userAvatar;
 
     /**
-     * 性别
+     * 用户简介
      */
-    private Integer gender;
+    private String userProfile;
 
     /**
-     * 用户角色: user, admin
+     * 用户角色：user/admin/ban
      */
     private String userRole;
 
     /**
-     * 密码
+     * accessKey
      */
-    private String userPassword;
+    private String accessKey;
+
+    /**
+     * secretKey
+     */
+    private String secretKey;
 
     /**
      * 创建时间
@@ -77,5 +86,5 @@ public class User implements Serializable {
     private Integer isDelete;
 
     @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -7572280859051489820L;
 }

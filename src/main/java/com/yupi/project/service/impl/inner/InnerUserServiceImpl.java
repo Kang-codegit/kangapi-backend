@@ -1,29 +1,29 @@
 package com.yupi.project.service.impl.inner;
 
+
 import com.api.kangcommon.model.entity.User;
 import com.api.kangcommon.service.InnerUserService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.yupi.project.common.ErrorCode;
-import com.yupi.project.exception.BusinessException;
-import com.yupi.project.mapper.UserMapper;
-import org.apache.commons.lang3.StringUtils;
+import com.yupi.project.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 
 import javax.annotation.Resource;
 
+/**
+ * 用户服务实现
+ *
+ */
 @DubboService
+@Slf4j
 public class InnerUserServiceImpl implements InnerUserService {
 
     @Resource
-    private UserMapper userMapper;
+    private UserService userService;
 
     @Override
     public User getInvokeUser(String accessKey) {
-        if (StringUtils.isBlank(accessKey)){
-            throw  new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("accessKey",accessKey);
-        return userMapper.selectOne(queryWrapper);
+        return userService.query()
+                .eq("accessKey", accessKey)
+                .one();
     }
 }

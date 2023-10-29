@@ -1,14 +1,13 @@
 package com.api.kangcommon.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import lombok.Data;
 
 /**
  * 接口信息
- * @TableName interface_info
  */
 @TableName(value ="interface_info")
 @Data
@@ -18,11 +17,6 @@ public class InterfaceInfo implements Serializable {
      */
     @TableId(type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 创建人
-     */
-    private Long userId;
 
     /**
      * 名称
@@ -40,6 +34,22 @@ public class InterfaceInfo implements Serializable {
     private String url;
 
     /**
+     * 请求参数
+     */
+    private String requestParams;
+
+    /**
+     * 请求参数说明
+     */
+    private String requestParamsRemark;
+
+
+    /**
+     * 响应参数说明
+     */
+    private String responseParamsRemark;
+
+    /**
      * 请求头
      */
     private String requestHeader;
@@ -50,11 +60,6 @@ public class InterfaceInfo implements Serializable {
     private String responseHeader;
 
     /**
-     * 请求参数
-     */
-    private String requestParams;
-
-    /**
      * 接口状态（0-关闭，1-开启）
      */
     private Integer status;
@@ -63,6 +68,11 @@ public class InterfaceInfo implements Serializable {
      * 请求类型
      */
     private String method;
+
+    /**
+     * 创建人
+     */
+    private Long userId;
 
     /**
      * 创建时间
@@ -82,6 +92,4 @@ public class InterfaceInfo implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
-
-
 }
