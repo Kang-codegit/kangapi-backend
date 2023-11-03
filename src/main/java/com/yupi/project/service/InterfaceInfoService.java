@@ -1,13 +1,14 @@
 package com.yupi.project.service;
 
-import cn.ichensw.neroapicommon.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
-import cn.ichensw.neroapicommon.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
-import cn.ichensw.neroapicommon.model.entity.InterfaceInfo;
-import cn.ichensw.neroapicommon.model.vo.InterfaceInfoVO;
-import cn.ichensw.neroclientsdk.client.NeroApiClient;
+
+import com.api.kangcommon.model.entity.InterfaceInfo;
+import com.api.kangcommon.model.vo.InterfaceInfoVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kangapi.kangclientsdk.client.NeroApiClient;
+import com.yupi.project.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
+import com.yupi.project.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 
 import javax.servlet.http.HttpServletRequest;
 

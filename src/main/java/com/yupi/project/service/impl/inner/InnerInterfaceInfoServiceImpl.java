@@ -9,8 +9,8 @@ import org.apache.dubbo.config.annotation.DubboService;
 import javax.annotation.Resource;
 
 /**
-* @author csw
-*/
+ * @author csw
+ */
 @DubboService
 public class InnerInterfaceInfoServiceImpl implements InnerInterfaceInfoService {
 
